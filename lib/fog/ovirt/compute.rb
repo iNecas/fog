@@ -5,7 +5,7 @@ module Fog
     class Ovirt < Fog::Service
       requires   :ovirt_username, :ovirt_password
       recognizes :ovirt_url,      :ovirt_server,  :ovirt_port, :ovirt_api_path, :ovirt_datacenter,
-                 :ovirt_filtered_api,
+                 :ovirt_filtered_api, :ovirt_persistent_auth, :ovirt_jsessionid,
                  :ovirt_ca_cert_store, :ovirt_ca_cert_file, :ovirt_ca_no_verify
 
       model_path 'fog/ovirt/models/compute'
@@ -125,17 +125,23 @@ module Fog
           url        = options[:ovirt_url]        || "#{@scheme}://#{server}:#{port}#{api_path}"
 
           connection_opts = {}
-          connection_opts[:datacenter_id] = options[:ovirt_datacenter]
-          connection_opts[:ca_cert_store] = options[:ovirt_ca_cert_store]
-          connection_opts[:ca_cert_file]  = options[:ovirt_ca_cert_file]
-          connection_opts[:ca_no_verify]  = options[:ovirt_ca_no_verify]
-          connection_opts[:filtered_api]  = options[:ovirt_filtered_api]
+          connection_opts[:datacenter_id]   = options[:ovirt_datacenter]
+          connection_opts[:ca_cert_store]   = options[:ovirt_ca_cert_store]
+          connection_opts[:ca_cert_file]    = options[:ovirt_ca_cert_file]
+          connection_opts[:ca_no_verify]    = options[:ovirt_ca_no_verify]
+          connection_opts[:filtered_api]    = options[:ovirt_filtered_api]
+          connection_opts[:persistent_auth] = options[:ovirt_persistent_auth]
+          connection_opts[:jsessionid]      = options[:ovirt_jsessionid]
 
           @client = OVIRT::Client.new(username, password, url, connection_opts)
         end
 
         def api_version
           client.api_version
+        end
+
+        def jsessionid
+          client.jsessionid
         end
 
         private
